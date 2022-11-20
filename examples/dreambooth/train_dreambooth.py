@@ -30,6 +30,7 @@ torch.backends.cudnn.benchmark = True
 
 
 logger = get_logger(__name__)
+from loguru import logger
 
 
 def parse_args(input_args=None):
@@ -501,6 +502,7 @@ def main(args):
         args.pretrained_model_name_or_path,
         subfolder="text_encoder",
         revision=args.revision,
+        use_auth_token=True,
     )
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path,
@@ -703,6 +705,7 @@ def main(args):
                 json.dump(args.__dict__, f, indent=2)
 
             if args.save_sample_prompt is not None:
+                logger.info(f"saving sample prompts...")
                 pipeline = pipeline.to(accelerator.device)
                 g_cuda = torch.Generator(device=accelerator.device).manual_seed(args.seed)
                 pipeline.set_progress_bar_config(disable=True)
